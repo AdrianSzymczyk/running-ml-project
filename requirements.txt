@@ -1,0 +1,3 @@
+numpy~=1.24.3
+setuptools~=67.6.1
+pandas~=2.0.1
