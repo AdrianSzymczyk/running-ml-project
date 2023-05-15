@@ -7,3 +7,5 @@ optuna~=3.1.1
 mlflow~=2.3.2
 numpyencoder~=0.3.0
 joblib~=1.2.0
+rich~=13.3.5
+typer~=0.9.0

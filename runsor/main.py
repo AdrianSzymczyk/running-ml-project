@@ -1,21 +1,30 @@
 import json
-import logging
 import tempfile
 from argparse import Namespace
 from pathlib import Path
 from typing import Dict
-
+import typer
 import joblib
 import mlflow
 import optuna
 import pandas as pd
 from numpyencoder import NumpyEncoder
 from optuna.integration.mlflow import MLflowCallback
+import sys
+import os
+
+# Add the parent directory to the module search path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import config
+from config.config import logger
 from runsor import predict, train, utils
 
+# Initialize Typer CLI app
+app = typer.Typer()
 
+
+@app.command()
 def elt_data():
     """
     Extract, load and transform data assets
@@ -23,11 +32,12 @@ def elt_data():
     data = pd.read_csv(config.DATA_URL)
     data.to_csv(Path(config.DATA_DIR, "activity_log.csv"), index=False)
 
-    logging.info("Saved data!")
+    logger.info("Saved data!")
 
 
+@app.command()
 def train_model(
-    args_fp: str, experiment_name: str = "baselines", run_name: str = "rnd_reg"
+        args_fp: str, experiment_name: str = "baselines", run_name: str = "rnd_reg"
 ) -> None:
     """
     Train a model with given hyperparameters
@@ -68,11 +78,12 @@ def train_model(
         utils.save_dict(performance, Path(config.CONFIG_DIR, "performance.json"))
 
 
+@app.command()
 def optimize(
-    args_fp: str = "config/args.json", study_name: str = "optimization", num_trials: int = 20
+        args_fp: str = "config/args.json", study_name: str = "optimization", num_trials: int = 20
 ) -> None:
     """
-    Optimize hyperparameters
+    Optimize hyperparameters.
     :param args_fp: location of arguments
     :param study_name: name of optimization study
     :param num_trials: number of trials to run
@@ -123,13 +134,16 @@ def load_artifacts(run_id: str = None) -> Dict:
     return {"args": args, "model": model, "performance": performance}
 
 
-def predict_value(data: pd.DataFrame, run_id: str = None) -> None:
+@app.command()
+def predict_value(data: str, run_id: str = None) -> None:
     """
     Predict calories burned during the run
-    :param data: Pandas DataFrame with new data to predict
+    :param data: location of the data
     :param run_id: run id to load artifacts for prediction. Defaults on None
     :return:
     """
+    # Convert dictionary with data into Pandas DataFrame
+    data = pd.read_csv(data)
     if not run_id:
         run_id = open(Path(config.CONFIG_DIR, "run_id.txt")).read()
     artifacts = load_artifacts(run_id)
@@ -139,16 +153,19 @@ def predict_value(data: pd.DataFrame, run_id: str = None) -> None:
 
 
 if __name__ == "__main__":
-    # new_data = pd.DataFrame({'Distance': [10.5, 8.2, 12.4, 6.7, 9.3],
+    # new_data = {'Distance': [10.5, 8.2, 12.4, 6.7, 9.3],
     #                          'Time': [5355.0, 4470.0, 5724.0, 3342.0, 4914.0],
     #                          'Avg HR': [135, 142, 149, 128, 133],
     #                          'Avg Run Cadence': [174, 168, 180, 182, 177],
     #                          'Avg Pace': [510.0, 546.0, 468.0, 498.0, 528.0],
     #                          'Elev Gain': [120, 70, 200, 30, 300],
     #                          'Elev Loss': [110, 80, 220, 40, 280]
-    #                          })
+    #                          }
+    # df = pd.DataFrame(new_data)
+    # df.to_csv(Path(config.DATA_DIR, 'new_data.csv'), index=False)
     # run_id = open(Path(config.CONFIG_DIR, 'run_id.txt')).read()
     # predict_value(data=new_data, run_id=run_id)
-    elt_data()
+    # elt_data()
     # args_path = Path(config.CONFIG_DIR, 'args.json')
     # train_model(args_path, 'baselines', run_name='rnd_reg')
+    app()

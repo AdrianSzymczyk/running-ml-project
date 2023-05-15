@@ -2,7 +2,7 @@
 
 ### Virtual environment
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+python -m venv venv
+venv\Scripts\activate.bat
 python -m pip install --upgrade pip setuptools wheel
 ```
