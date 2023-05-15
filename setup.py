@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from setuptools import find_namespace_packages, setup
+from setuptools import setup
 
 # Load packages from requirements.txt
 BASE_DIR = Path(__file__).parent
