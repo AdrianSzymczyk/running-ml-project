@@ -3,3 +3,7 @@ setuptools~=67.6.1
 pandas~=2.0.1
 sklearn~=0.0.post5
 scikit-learn~=1.2.2
+optuna~=3.1.1
+mlflow~=2.3.2
+numpyencoder~=0.3.0
+joblib~=1.2.0

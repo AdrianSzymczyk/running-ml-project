@@ -1,6 +1,7 @@
 import pandas as pd
 from datetime import datetime
 from typing import Tuple
+from config.config import logger
 
 from sklearn.model_selection import train_test_split
 
@@ -46,9 +47,15 @@ def preprocess(df: pd.DataFrame) -> pd.DataFrame:
         ~df[['Distance', 'Avg HR', 'Max HR', 'Avg Pace', 'Avg Run Cadence', 'Elev Gain', 'Elev Loss']].isin(['--']).any(
             axis=1)].reset_index(drop=True)
 
+    # Convert data with comma
+    df['Elev Gain'] = df['Elev Gain'].apply(lambda x: int(str(x).replace(',', '')))
+    df['Elev Loss'] = df['Elev Loss'].apply(lambda x: int(str(x).replace(',', '')))
+    df['Calories'] = df['Calories'].apply(lambda x: int(str(x).replace(',', '')))
+
     # Data type conversion
-    df[['Calories', 'Avg HR', 'Avg Run Cadence', 'Elev Gain', 'Elev Loss']] = \
-        df[['Calories', 'Avg HR', 'Avg Run Cadence', 'Elev Gain', 'Elev Loss']].astype(int)
+    df[['Calories', 'Avg HR', 'Avg Run Cadence']] = \
+        df[['Calories', 'Avg HR', 'Avg Run Cadence']].astype(int)
+    df[['Elev Gain', 'Elev Loss']] = df[['Elev Gain', 'Elev Loss']].astype(float)
 
     # Running time conversion
     df = time_converter(df, 'Time')
@@ -57,17 +64,27 @@ def preprocess(df: pd.DataFrame) -> pd.DataFrame:
     # Distance calculation from mile to kilometers
     df['Distance'] = df['Distance'].apply(lambda x: round(x * 1.60934, 2))
 
+    # Drop irrelevant columns from the data
+    df = df.drop(['Activity Type', 'Date', 'Title', 'Best Lap Time', 'Number of Laps', 'Best Pace', 'Max HR',
+                  'Best Pace', 'Max Run Cadence', 'Avg Stride Length'], axis=1)
+
+    logger.info('Preprocessing completed!!!')
     return df
 
 
-def get_data_splits(X: pd.DataFrame, y: pd.Series, train_size: float = 0.7) -> Tuple:
+def get_data_splits(X: pd.DataFrame, y: pd.Series, train_size: float = 0.8, val_set: bool = False) -> Tuple:
     """
     Split the data into well-balanced data splits
     :param X: Pandas DataFrame with features
     :param y: Pandas Series with target values
     :param train_size: size of the training set
+    :param val_set: whether create validation set. Defaults on False
     :return: data split as Pandas DataFrames and Series
     """
-    X_train, X_, y_train, y_ = train_test_split(X, y, train_size=train_size)
-    X_val, X_test, y_val, y_test = train_test_split(X_, y_, train_size=0.5)
-    return X_train, X_val, X_test, y_train, y_val, y_test
+    if val_set:
+        X_train, X_, y_train, y_ = train_test_split(X, y, train_size=train_size)
+        X_val, X_test, y_val, y_test = train_test_split(X_, y_, train_size=0.5)
+        return X_train.values, X_val.values, X_test.values, y_train.values, y_val.values, y_test.values
+    else:
+        X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_size)
+        return X_train.values, X_test.values, y_train.values, y_test.values
