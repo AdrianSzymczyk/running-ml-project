@@ -1,4 +1,5 @@
 from typing import Dict, List
+
 import pandas as pd
 
 
@@ -12,7 +13,7 @@ def predict(data: pd.DataFrame, artifacts: Dict) -> List:
     Returns:
         List: predictions for input data.
     """
-    calories = artifacts['model'].predict(data.values)
+    calories = artifacts["model"].predict(data.values)
     predictions = [
         {
             "input_text": data.iloc[i].values,

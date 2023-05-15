@@ -1,12 +1,20 @@
+from typing import Dict, Tuple
+
 import numpy as np
 import pandas as pd
-from typing import Dict, Tuple
-from sklearn.metrics import mean_squared_error, mean_absolute_error
+from sklearn.metrics import mean_absolute_error, mean_squared_error
 from sklearn.model_selection import cross_val_score
 
 
-def get_metrics(y_true: pd.Series, y_pred: pd.Series, model, X_train: pd.DataFrame, y_train: pd.Series, cv: int = 10,
-                scoring: str = 'neg_mean_squared_error') -> Dict:
+def get_metrics(
+    y_true: pd.Series,
+    y_pred: pd.Series,
+    model,
+    X_train: pd.DataFrame,
+    y_train: pd.Series,
+    cv: int = 10,
+    scoring: str = "neg_mean_squared_error",
+) -> Dict:
     """
     Performance metrics using truths and predictions.
     :param y_true: Pandas Series with true values
@@ -21,12 +29,12 @@ def get_metrics(y_true: pd.Series, y_pred: pd.Series, model, X_train: pd.DataFra
     # Performance
     metrics = {}
 
-    metrics['MSE'] = mean_squared_error(y_true, y_pred)
-    metrics['RMSE'] = mean_squared_error(y_true, y_pred, squared=False)
-    metrics['MAE'] = mean_absolute_error(y_true, y_pred)
+    metrics["MSE"] = mean_squared_error(y_true, y_pred)
+    metrics["RMSE"] = mean_squared_error(y_true, y_pred, squared=False)
+    metrics["MAE"] = mean_absolute_error(y_true, y_pred)
     scores = cross_val_score(model, X_train, y_train, cv=cv, scoring=scoring, n_jobs=-1)
     scores = np.sqrt(-scores)
-    metrics['Cross_val_mean'] = scores.mean()
-    metrics['Cross_val_std'] = scores.std()
+    metrics["Cross_val_mean"] = scores.mean()
+    metrics["Cross_val_std"] = scores.std()
 
     return metrics

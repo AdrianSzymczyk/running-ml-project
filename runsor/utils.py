@@ -1,7 +1,8 @@
-import random
 import json
-import numpy as np
+import random
 from typing import Dict
+
+import numpy as np
 
 
 def load_dict(filepath: str) -> Dict:
@@ -10,7 +11,7 @@ def load_dict(filepath: str) -> Dict:
     :param filepath: location of file
     :return: dictionary with loaded data from JSON file
     """
-    with open(filepath, 'r') as file:
+    with open(filepath, "r") as file:
         d = json.load(file)
     return d
 
@@ -24,9 +25,9 @@ def save_dict(data: Dict, filepath: str, cls=None, sortkeys: bool = False) -> No
     :param sortkeys: whether to sort keys alphabetically. Defaults as False
     :return:
     """
-    with open(filepath, 'w') as file:
+    with open(filepath, "w") as file:
         json.dump(data, indent=2, fp=file, cls=cls, sort_keys=sortkeys)
-        file.write('\n')
+        file.write("\n")
 
 
 def set_seeds(seed: int = 42) -> None:

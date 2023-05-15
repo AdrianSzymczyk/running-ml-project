@@ -1,13 +1,14 @@
 import json
+from argparse import Namespace
+from typing import Dict
+
 import mlflow
+import optuna
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
-from typing import Dict
-from argparse import Namespace
-import optuna
 
-from runsor import data, utils,evaluate
+from runsor import data, evaluate, utils
 
 
 def train(df: pd.DataFrame, args: Namespace, trial: optuna.trial._trial.Trial = None) -> Dict:
@@ -25,8 +26,9 @@ def train(df: pd.DataFrame, args: Namespace, trial: optuna.trial._trial.Trial = 
     df = data.preprocess(df)
 
     # Split data
-    X_train, X_val, X_test, y_train, y_val, y_test = data.get_data_splits(df.drop('Calories', axis=1), y=df['Calories'],
-                                                                          val_set=True)
+    X_train, X_val, X_test, y_train, y_val, y_test = data.get_data_splits(
+        df.drop("Calories", axis=1), y=df["Calories"], val_set=True
+    )
 
     # Model
     model = RandomForestRegressor(
@@ -58,13 +60,11 @@ def train(df: pd.DataFrame, args: Namespace, trial: optuna.trial._trial.Trial = 
 
     # Evaluation
     y_pred = model.predict(X_test)
-    performance = evaluate.get_metrics(y_true=y_test, y_pred=y_pred, model=model, X_train=X_train, y_train=y_train)
+    performance = evaluate.get_metrics(
+        y_true=y_test, y_pred=y_pred, model=model, X_train=X_train, y_train=y_train
+    )
 
-    return {
-        'args': args,
-        'model': model,
-        'performance': performance
-    }
+    return {"args": args, "model": model, "performance": performance}
 
 
 def objective(args: Namespace, df: pd.DataFrame, trial: optuna.trial._trial.Trial) -> float:
@@ -76,19 +76,19 @@ def objective(args: Namespace, df: pd.DataFrame, trial: optuna.trial._trial.Tria
     :return:
     """
     # Parameters to be tuned
-    args.n_estimators = trial.suggest_int('n_estimators', 100, 1000, step=100)
-    args.max_depth = trial.suggest_categorical('max_depth', [None, 5, 10, 15])
-    args.min_samples_split = trial.suggest_int('min_samples_split', 2, 10, step=1)
-    args.min_samples_leaf = trial.suggest_int('min_samples_leaf', 1, 10, step=1)
-    args.max_features = trial.suggest_categorical('max_features', [1.0, 'log2', 'sqrt'])
+    args.n_estimators = trial.suggest_int("n_estimators", 100, 1000, step=100)
+    args.max_depth = trial.suggest_categorical("max_depth", [None, 5, 10, 15])
+    args.min_samples_split = trial.suggest_int("min_samples_split", 2, 10, step=1)
+    args.min_samples_leaf = trial.suggest_int("min_samples_leaf", 1, 10, step=1)
+    args.max_features = trial.suggest_categorical("max_features", [1.0, "log2", "sqrt"])
 
     artifacts = train(df=df, args=args, trial=trial)
 
     # Set additional attributes
-    overall_performance = artifacts['performance']
-    print('Train objective: ', json.dumps(overall_performance, indent=2))
-    trial.set_user_attr('MSE', overall_performance['MSE'])
-    trial.set_user_attr('RMSE', overall_performance['RMSE'])
-    trial.set_user_attr('MAE', overall_performance['MAE'])
+    overall_performance = artifacts["performance"]
+    print("Train objective: ", json.dumps(overall_performance, indent=2))
+    trial.set_user_attr("MSE", overall_performance["MSE"])
+    trial.set_user_attr("RMSE", overall_performance["RMSE"])
+    trial.set_user_attr("MAE", overall_performance["MAE"])
 
-    return overall_performance['RMSE']
+    return overall_performance["RMSE"]

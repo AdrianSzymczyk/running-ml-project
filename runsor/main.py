@@ -1,19 +1,19 @@
+import json
+import logging
 import tempfile
+from argparse import Namespace
+from pathlib import Path
 from typing import Dict
 
 import joblib
 import mlflow
 import optuna
 import pandas as pd
-import logging
-import json
-from pathlib import Path
-from argparse import Namespace
-from optuna.integration.mlflow import MLflowCallback
 from numpyencoder import NumpyEncoder
+from optuna.integration.mlflow import MLflowCallback
 
 from config import config
-from runsor import utils, train, predict
+from runsor import predict, train, utils
 
 
 def elt_data():
@@ -21,12 +21,14 @@ def elt_data():
     Extract, load and transform data assets
     """
     data = pd.read_csv(config.DATA_URL)
-    data.to_csv(Path(config.DATA_DIR, 'activity_log.csv'), index=False)
+    data.to_csv(Path(config.DATA_DIR, "activity_log.csv"), index=False)
 
-    logging.info('Saved data!')
+    logging.info("Saved data!")
 
 
-def train_model(args_fp: str, experiment_name: str = 'baselines', run_name: str = 'rnd_reg') -> None:
+def train_model(
+    args_fp: str, experiment_name: str = "baselines", run_name: str = "rnd_reg"
+) -> None:
     """
     Train a model with given hyperparameters
     :param args_fp: filepath to the file with parameters
@@ -34,31 +36,31 @@ def train_model(args_fp: str, experiment_name: str = 'baselines', run_name: str 
     :param run_name: name of specifies run in experiment
     """
     # Load data
-    df = pd.read_csv(Path(config.DATA_DIR, 'activity_log.csv'))
+    df = pd.read_csv(Path(config.DATA_DIR, "activity_log.csv"))
 
     # Train
     args = Namespace(**utils.load_dict(filepath=args_fp))
     mlflow.set_experiment(experiment_name=experiment_name)
     with mlflow.start_run(run_name=run_name):
         run_id = mlflow.active_run().info.run_id
-        print(f'Run ID: {run_id}')
+        print(f"Run ID: {run_id}")
         artifacts = train.train(df=df, args=args)
-        performance = artifacts['performance']
+        performance = artifacts["performance"]
         print(json.dumps(performance, indent=2))
 
         # Log metrics and parameters
-        mlflow.log_metrics({'MSE': performance['MSE']})
-        mlflow.log_metrics({'RMSE': performance['RMSE']})
-        mlflow.log_metrics({'MAE': performance['MAE']})
-        mlflow.log_metrics({'Cross_val_mean': performance['Cross_val_mean']})
-        mlflow.log_metrics({'Cross_val_std': performance['Cross_val_std']})
-        mlflow.log_params(vars(artifacts['args']))
+        mlflow.log_metrics({"MSE": performance["MSE"]})
+        mlflow.log_metrics({"RMSE": performance["RMSE"]})
+        mlflow.log_metrics({"MAE": performance["MAE"]})
+        mlflow.log_metrics({"Cross_val_mean": performance["Cross_val_mean"]})
+        mlflow.log_metrics({"Cross_val_std": performance["Cross_val_std"]})
+        mlflow.log_params(vars(artifacts["args"]))
 
         # Log artifacts
         with tempfile.TemporaryDirectory() as dp:
-            utils.save_dict(vars(artifacts['args']), Path(dp, 'args.json'), cls=NumpyEncoder)
-            joblib.dump(artifacts['model'], Path(dp, 'model.pkl'))
-            utils.save_dict(performance, Path(dp, 'performance.json'))
+            utils.save_dict(vars(artifacts["args"]), Path(dp, "args.json"), cls=NumpyEncoder)
+            joblib.dump(artifacts["model"], Path(dp, "model.pkl"))
+            utils.save_dict(performance, Path(dp, "performance.json"))
             mlflow.log_artifacts(dp)
 
         # Save to config
@@ -66,7 +68,9 @@ def train_model(args_fp: str, experiment_name: str = 'baselines', run_name: str 
         utils.save_dict(performance, Path(config.CONFIG_DIR, "performance.json"))
 
 
-def optimize(args_fp: str = 'config/args.json', study_name: str = 'optimization', num_trials: int = 20) -> None:
+def optimize(
+    args_fp: str = "config/args.json", study_name: str = "optimization", num_trials: int = 20
+) -> None:
     """
     Optimize hyperparameters
     :param args_fp: location of arguments
@@ -74,14 +78,14 @@ def optimize(args_fp: str = 'config/args.json', study_name: str = 'optimization'
     :param num_trials: number of trials to run
     """
     # Load data
-    df = pd.read_csv(Path(config.DATA_DIR, 'activity_log.csv'))
+    df = pd.read_csv(Path(config.DATA_DIR, "activity_log.csv"))
 
     # Optimize
     args = Namespace(**utils.load_dict(filepath=args_fp))
-    print('Args:', args)
+    print("Args:", args)
     pruner = optuna.pruners.MedianPruner(n_startup_trials=5, n_warmup_steps=5)
-    study = optuna.create_study(study_name=study_name, direction='minimize', pruner=pruner)
-    mlflow_callback = MLflowCallback(tracking_uri=mlflow.get_tracking_uri(), metric_name='RMSE')
+    study = optuna.create_study(study_name=study_name, direction="minimize", pruner=pruner)
+    mlflow_callback = MLflowCallback(tracking_uri=mlflow.get_tracking_uri(), metric_name="RMSE")
     study.optimize(
         lambda trial: train.objective(args, df, trial),
         n_trials=num_trials,
@@ -90,12 +94,12 @@ def optimize(args_fp: str = 'config/args.json', study_name: str = 'optimization'
 
     # Best trial
     trails_df = study.trials_dataframe()
-    trails_df = trails_df.sort_values(['user_attrs_RMSE'], ascending=False)
+    trails_df = trails_df.sort_values(["user_attrs_RMSE"], ascending=False)
     # Save best parameter values
     args = {**args.__dict__, **study.best_trial.params}
     utils.save_dict(data=args, filepath=args_fp, cls=NumpyEncoder)
-    print(f'\nBest value (RMSE) {study.best_trial.value}')
-    print(f'Best hyperparameters: {json.dumps(study.best_trial.params, indent=2)}')
+    print(f"\nBest value (RMSE) {study.best_trial.value}")
+    print(f"Best hyperparameters: {json.dumps(study.best_trial.params, indent=2)}")
 
 
 def load_artifacts(run_id: str = None) -> Dict:
@@ -116,11 +120,7 @@ def load_artifacts(run_id: str = None) -> Dict:
     model = joblib.load(Path(artifacts_dir, "model.pkl"))
     performance = utils.load_dict(filepath=Path(artifacts_dir, "performance.json"))
 
-    return {
-        "args": args,
-        "model": model,
-        "performance": performance
-    }
+    return {"args": args, "model": model, "performance": performance}
 
 
 def predict_value(data: pd.DataFrame, run_id: str = None) -> None:
@@ -131,14 +131,14 @@ def predict_value(data: pd.DataFrame, run_id: str = None) -> None:
     :return:
     """
     if not run_id:
-        run_id = open(Path(config.CONFIG_DIR, 'run_id.txt')).read()
+        run_id = open(Path(config.CONFIG_DIR, "run_id.txt")).read()
     artifacts = load_artifacts(run_id)
     prediction = predict.predict(data=data, artifacts=artifacts)
     print(prediction)
     return prediction
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # new_data = pd.DataFrame({'Distance': [10.5, 8.2, 12.4, 6.7, 9.3],
     #                          'Time': [5355.0, 4470.0, 5724.0, 3342.0, 4914.0],
     #                          'Avg HR': [135, 142, 149, 128, 133],
