@@ -35,7 +35,7 @@ def time_converter(df: pd.DataFrame, time_col: str) -> pd.DataFrame:
         else datetime.strptime(x, "%H:%M:%S").time()
     )
     # Convert running time into seconds
-    df[time_col] = pd.to_timedelta(df["Time"].astype(str)).dt.total_seconds().astype(int)
+    df[time_col] = pd.to_timedelta(df[time_col].astype(str)).dt.total_seconds().astype(int)
     return df
 
 

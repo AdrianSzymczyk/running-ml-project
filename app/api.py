@@ -7,6 +7,10 @@ from pathlib import Path
 from config import config
 from config.config import logger
 from runsor import main
+import pandas as pd
+
+from app.schemas import RunningPack, Run
+from runsor import predict
 
 # Define application
 app = FastAPI(
@@ -73,26 +77,40 @@ def _performance(request: Request) -> Dict:
 @app.get("/args", tags=["Arguments"])
 @create_response
 def _args(request: Request) -> Dict:
-    """Get all arguments used for the run."""
+    """Get all arguments used for the training."""
     response = {
         "message": HTTPStatus.OK.phrase,
         "status-code": HTTPStatus.OK,
         "data": {
-            "args": vars(artifacts["args"]),
+            "args": vars(artifacts["args"])
         },
     }
     return response
 
 
-@app.get("/args/{arg}", tags=['Arguments'])
+@app.get("/args/{arg}", tags=["Arguments"])
 @create_response
 def _arg(request: Request, arg: str) -> Dict:
-    """Get a specific parameter's value used for the run."""
+    """Get a specific argument used for the training."""
     response = {
         "message": HTTPStatus.OK.phrase,
         "status-code": HTTPStatus.OK,
         "data": {
             arg: vars(artifacts["args"]).get(arg, ""),
+        },
+    }
+    return response
+
+
+@app.post("/predict", tags=["Prediction"])
+@create_response
+def _predict(request: Request, run_pack: RunningPack) -> Dict:
+    runs = [run for run in run_pack.runs]
+    response = {
+        "message": HTTPStatus.OK.phrase,
+        "status-code": HTTPStatus.OK,
+        "data": {
+            "runs": runs
         },
     }
     return response
