@@ -1,3 +1,4 @@
+import numpy as np
 from fastapi import FastAPI, Request
 from http import HTTPStatus
 from typing import Dict
@@ -8,6 +9,7 @@ from config import config
 from config.config import logger
 from runsor import main
 import pandas as pd
+import json
 
 from app.schemas import RunningPack, Run
 from runsor import predict
@@ -105,12 +107,15 @@ def _arg(request: Request, arg: str) -> Dict:
 @app.post("/predict", tags=["Prediction"])
 @create_response
 def _predict(request: Request, run_pack: RunningPack) -> Dict:
-    runs = [run for run in run_pack.runs]
+    # Convert list of Run objects into json format
+    runs_json = json.loads(run_pack.json())
+    df = pd.json_normalize(runs_json, 'runs')
+    predictions = predict.predict(df, artifacts=artifacts)
     response = {
         "message": HTTPStatus.OK.phrase,
         "status-code": HTTPStatus.OK,
         "data": {
-            "runs": runs
+            "predictions": predictions
         },
     }
     return response

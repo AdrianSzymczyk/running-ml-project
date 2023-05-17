@@ -153,19 +153,28 @@ def predict_value(data: str, run_id: str = None) -> None:
 
 
 if __name__ == "__main__":
-    # new_data = {'Distance': [10.5, 8.2, 12.4, 6.7, 9.3],
-    #                          'Time': [5355.0, 4470.0, 5724.0, 3342.0, 4914.0],
-    #                          'Avg HR': [135, 142, 149, 128, 133],
-    #                          'Avg Run Cadence': [174, 168, 180, 182, 177],
-    #                          'Avg Pace': [510.0, 546.0, 468.0, 498.0, 528.0],
-    #                          'Elev Gain': [120, 70, 200, 30, 300],
-    #                          'Elev Loss': [110, 80, 220, 40, 280]
-    #                          }
-    # df = pd.DataFrame(new_data)
+    # Load data
+    # elt_data()
+    # args_path = Path(config.CONFIG_DIR, 'args.json')
+
+    # Hyperparameters optimization
+    # optimize(args_fp=args_path, study_name='optimization', num_trials=20)
+
+    # Store artifacts with experiment tracking
+    # train_model(args_path, 'baselines', run_name='rnd_reg')
+
+    # Predict new data
+    # df = pd.DataFrame({
+    #     'Distance': [7.85, 6.75, 9.12, 8.93, 5.27],
+    #     'Time': [2387, 2124, 2745, 2678, 1885],
+    #     'Avg HR': [148, 138, 152, 146, 134],
+    #     'Avg Run Cadence': [174, 169, 181, 179, 163],
+    #     'Avg Pace': [305, 315, 301, 299, 358],
+    #     'Elev Gain': [132.0, 156.0, 189.0, 174.0, 92.0],
+    #     'Elev Loss': [129.0, 143.0, 167.0, 152.0, 81.0]
+    # })
     # df.to_csv(Path(config.DATA_DIR, 'new_data.csv'), index=False)
     # run_id = open(Path(config.CONFIG_DIR, 'run_id.txt')).read()
     # predict_value(data=new_data, run_id=run_id)
-    # elt_data()
-    # args_path = Path(config.CONFIG_DIR, 'args.json')
-    # train_model(args_path, 'baselines', run_name='rnd_reg')
+
     app()

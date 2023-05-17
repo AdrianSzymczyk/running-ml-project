@@ -16,8 +16,8 @@ def predict(data: pd.DataFrame, artifacts: Dict) -> List:
     calories = artifacts["model"].predict(data.values)
     predictions = [
         {
-            "input_text": data.iloc[i].values,
-            "predicted_tag": calories[i],
+            "input_data": data.iloc[i].values.tolist(),
+            "predicted_calories": int(calories[i]),
         }
         for i in range(len(calories))
     ]
