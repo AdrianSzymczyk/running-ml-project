@@ -10,6 +10,11 @@ import optuna
 import pandas as pd
 from numpyencoder import NumpyEncoder
 from optuna.integration.mlflow import MLflowCallback
+import sys
+import os
+
+# Add the parent directory to the module search path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import config
 from config.config import logger
@@ -34,7 +39,7 @@ def el_data() -> None:
 
 @app.command()
 def train_model(
-        args_fp: str, experiment_name: str = "baselines", run_name: str = "rnd_reg"
+        args_fp: str = 'config/args.json', experiment_name: str = "baselines", run_name: str = "rnd_reg"
 ) -> None:
     """
     Train a model with given hyperparameters
@@ -105,8 +110,8 @@ def optimize(
     # Save best parameter values
     args = {**args.__dict__, **study.best_trial.params}
     utils.save_dict(data=args, filepath=args_fp, cls=NumpyEncoder)
-    print(f"\nBest value (RMSE) {study.best_trial.value}")
-    print(f"Best hyperparameters: {json.dumps(study.best_trial.params, indent=2)}")
+    logger.info(f"\nBest value (RMSE) {study.best_trial.value}")
+    logger.info(f"Best hyperparameters: {json.dumps(study.best_trial.params, indent=2)}")
 
 
 def load_artifacts(run_id: str = None) -> Dict:
@@ -146,9 +151,9 @@ def predict_value(data: Dict, run_id: str = None) -> List:
 
 
 if __name__ == "__main__":
+    args_path = Path(config.CONFIG_DIR, 'args.json')
     # Load data
     # elt_data()
-    # args_path = Path(config.CONFIG_DIR, 'args.json')
 
     # Hyperparameters optimization
     # optimize(args_fp=args_path, study_name='optimization', num_trials=20)
