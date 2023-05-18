@@ -9,7 +9,7 @@ from config.config import logger
 
 def pace_to_km_converter(pace: str) -> float:
     """
-    Convert pace from minutes per Mile to seconds
+    Convert pace from minutes per Mile to seconds per kilometer
     :param pace: String with running pace.
     :return: Running pace represented in seconds (numeric values better for model).
     """

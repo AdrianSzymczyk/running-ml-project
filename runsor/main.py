@@ -2,7 +2,7 @@ import json
 import tempfile
 from argparse import Namespace
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List
 import typer
 import joblib
 import mlflow
@@ -10,11 +10,6 @@ import optuna
 import pandas as pd
 from numpyencoder import NumpyEncoder
 from optuna.integration.mlflow import MLflowCallback
-import sys
-import os
-
-# Add the parent directory to the module search path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import config
 from config.config import logger
@@ -25,11 +20,13 @@ app = typer.Typer()
 
 
 @app.command()
-def elt_data():
+def el_data() -> None:
     """
-    Extract, load and transform data assets
+    Extract and load data assets
     """
+    # Extract data
     data = pd.read_csv(config.DATA_URL)
+    # Load data into csv file
     data.to_csv(Path(config.DATA_DIR, "activity_log.csv"), index=False)
 
     logger.info("Saved data!")
@@ -53,10 +50,9 @@ def train_model(
     mlflow.set_experiment(experiment_name=experiment_name)
     with mlflow.start_run(run_name=run_name):
         run_id = mlflow.active_run().info.run_id
-        print(f"Run ID: {run_id}")
         artifacts = train.train(df=df, args=args)
         performance = artifacts["performance"]
-        print(json.dumps(performance, indent=2))
+        logger.info(json.dumps(performance, indent=2))
 
         # Log metrics and parameters
         mlflow.log_metrics({"MSE": performance["MSE"]})
@@ -134,21 +130,18 @@ def load_artifacts(run_id: str = None) -> Dict:
     return {"args": args, "model": model, "performance": performance}
 
 
-@app.command()
-def predict_value(data: str, run_id: str = None) -> None:
+def predict_value(data: Dict, run_id: str = None) -> List:
     """
     Predict calories burned during the run
     :param data: location of the data
     :param run_id: run id to load artifacts for prediction. Defaults on None
     :return:
     """
-    # Convert dictionary with data into Pandas DataFrame
-    data = pd.read_csv(data)
+    df = pd.DataFrame(data)
     if not run_id:
         run_id = open(Path(config.CONFIG_DIR, "run_id.txt")).read()
     artifacts = load_artifacts(run_id)
-    prediction = predict.predict(data=data, artifacts=artifacts)
-    print(prediction)
+    prediction = predict.predict(data=df, artifacts=artifacts)
     return prediction
 
 
@@ -164,7 +157,7 @@ if __name__ == "__main__":
     # train_model(args_path, 'baselines', run_name='rnd_reg')
 
     # Predict new data
-    # df = pd.DataFrame({
+    # new_data = pd.DataFrame({
     #     'Distance': [7.85, 6.75, 9.12, 8.93, 5.27],
     #     'Time': [2387, 2124, 2745, 2678, 1885],
     #     'Avg HR': [148, 138, 152, 146, 134],
@@ -173,8 +166,8 @@ if __name__ == "__main__":
     #     'Elev Gain': [132.0, 156.0, 189.0, 174.0, 92.0],
     #     'Elev Loss': [129.0, 143.0, 167.0, 152.0, 81.0]
     # })
-    # df.to_csv(Path(config.DATA_DIR, 'new_data.csv'), index=False)
+    # new_data.to_csv(Path(config.DATA_DIR, 'new_data.csv'), index=False)
     # run_id = open(Path(config.CONFIG_DIR, 'run_id.txt')).read()
-    # predict_value(data=new_data, run_id=run_id)
+    # print(predict_value(data=new_data, run_id=run_id))
 
     app()
