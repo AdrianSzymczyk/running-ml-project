@@ -163,16 +163,15 @@ if __name__ == "__main__":
 
     # Predict new data
     # new_data = pd.DataFrame({
-    #     'Distance': [7.85, 6.75, 9.12, 8.93, 5.27],
-    #     'Time': [2387, 2124, 2745, 2678, 1885],
-    #     'Avg HR': [148, 138, 152, 146, 134],
-    #     'Avg Run Cadence': [174, 169, 181, 179, 163],
-    #     'Avg Pace': [305, 315, 301, 299, 358],
-    #     'Elev Gain': [132.0, 156.0, 189.0, 174.0, 92.0],
-    #     'Elev Loss': [129.0, 143.0, 167.0, 152.0, 81.0]
+    #     'Distance': [7.85, 6.75, 9.12, 8.93, 5.27, 6.20],
+    #     'Time': [2387, 2124, 2745, 2678, 1885, 2164],
+    #     'Avg HR': [148, 138, 152, 146, 134, 166],
+    #     'Avg Run Cadence': [174, 169, 181, 179, 163, 156],
+    #     'Avg Pace': [305, 315, 301, 299, 358, 349],
+    #     'Elev Gain': [132.0, 156.0, 189.0, 174.0, 92.0, 236.0],
+    #     'Elev Loss': [129.0, 143.0, 167.0, 152.0, 81.0, 221.0]
     # })
-    # new_data.to_csv(Path(config.DATA_DIR, 'new_data.csv'), index=False)
     # run_id = open(Path(config.CONFIG_DIR, 'run_id.txt')).read()
     # print(predict_value(data=new_data, run_id=run_id))
 
-    app()
+    # app()

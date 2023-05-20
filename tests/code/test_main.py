@@ -37,6 +37,7 @@ def test_el_data():
     assert result.exit_code == 0
 
 
+@pytest.mark.training
 def test_train_model():
     experiment_name = "test_experiment"
     run_name = "test_run"
@@ -54,6 +55,7 @@ def test_train_model():
     delete_experiment(experiment_name)
 
 
+@pytest.mark.training
 def test_optimize():
     study_name = 'test_optimization'
     num_trials = 1
