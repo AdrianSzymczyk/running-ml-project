@@ -1,4 +1,3 @@
-import numpy as np
 from fastapi import FastAPI, Request
 from http import HTTPStatus
 from typing import Dict

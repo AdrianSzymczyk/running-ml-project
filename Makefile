@@ -27,7 +27,14 @@ clean: style
 	rm -f .coverage
 
 .PHONY: help
+help:
 	@echo "Commands:"
 	@echo "venv	: creates a virtual environment."
 	@echo "style	: executes style formatting."
 	@echo "clean	: clens all unnecessary files."
+
+# Test
+.PHONY: test
+test:
+	pytest -m "not training"
+	cd tests && great_expectations checkpoint run runTrainings

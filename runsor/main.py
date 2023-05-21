@@ -175,3 +175,5 @@ if __name__ == "__main__":
     # print(predict_value(data=new_data, run_id=run_id))
 
     # app()
+    train.train(pd.read_csv(Path(config.DATA_DIR, "activity_log.csv")),
+                args=Namespace(**utils.load_dict(filepath=Path(config.CONFIG_DIR, "args.json"))))

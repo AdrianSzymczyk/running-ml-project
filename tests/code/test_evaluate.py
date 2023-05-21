@@ -11,5 +11,3 @@ def test_get_metrics():
     assert metrics['RMSE'] == 0.25
     assert metrics['MAE'] == 0.125
     assert metrics['R2'] == 0.75
-
-
