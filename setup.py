@@ -7,7 +7,7 @@ with open(Path(BASE_DIR, "requirements.txt"), "r") as file:
     required_packages = [ln.strip() for ln in file.readlines()]
 
 style_packages = ["black==22.3.0", "flake8==3.9.2", "isort==5.10.1"]
-test_packages = ["pytest==7.3.1", "pytest-cov=4.0.0"]
+test_packages = ["pytest==7.3.1", "pytest-cov=4.0.0", "great-expectations==0.16.13"]
 
 # Setup object describe how to set up package and it's dependencies
 setup(
