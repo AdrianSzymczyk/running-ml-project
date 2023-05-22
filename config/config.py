@@ -22,7 +22,7 @@ mlflow.set_tracking_uri("file://" + str(MODEL_REGISTRY.absolute()))
 # Create dirs
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 LOGS_DIR.mkdir(parents=True, exist_ok=True)
-
+BLOB_STORE.mkdir(parents=True, exist_ok=True)
 # Assets
 DATA_URL = (
     "https://raw.githubusercontent.com/AdrianSzymczyk/running-ml-project/main/data/activity_log.csv"

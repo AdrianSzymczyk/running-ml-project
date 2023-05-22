@@ -38,3 +38,9 @@ help:
 test:
 	pytest -m "not training"
 	cd tests && great_expectations checkpoint run runTrainings
+
+# DVC
+.PHONY: dvc
+dvc:
+	dvc add data/activity_log.csv
+	dvc push
