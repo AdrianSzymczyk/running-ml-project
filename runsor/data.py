@@ -115,7 +115,6 @@ def get_data_splits(
     if val_set:
         X_train, X_, y_train, y_ = train_test_split(X, y, train_size=train_size)
         X_val, X_test, y_val, y_test = train_test_split(X_, y_, train_size=0.5)
-        print(X_test[:10])
         return (
             X_train.values,
             X_val.values,

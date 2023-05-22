@@ -94,7 +94,6 @@ def optimize(
 
     # Optimize
     args = Namespace(**utils.load_dict(filepath=args_fp))
-    print("Args:", args)
     pruner = optuna.pruners.MedianPruner(n_startup_trials=5, n_warmup_steps=5)
     study = optuna.create_study(study_name=study_name, direction="minimize", pruner=pruner)
     mlflow_callback = MLflowCallback(tracking_uri=mlflow.get_tracking_uri(), metric_name="RMSE")
@@ -174,6 +173,4 @@ if __name__ == "__main__":
     # run_id = open(Path(config.CONFIG_DIR, 'run_id.txt')).read()
     # print(predict_value(data=new_data, run_id=run_id))
 
-    # app()
-    train.train(pd.read_csv(Path(config.DATA_DIR, "activity_log.csv")),
-                args=Namespace(**utils.load_dict(filepath=Path(config.CONFIG_DIR, "args.json"))))
+    app()
