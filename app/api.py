@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Request
 from http import HTTPStatus
 from typing import Dict
@@ -9,6 +10,7 @@ from config.config import logger
 from runsor import main
 import pandas as pd
 import json
+import uvicorn
 
 from app.schemas import RunningPack, Run
 from runsor import predict
@@ -118,3 +120,7 @@ def _predict(request: Request, run_pack: RunningPack) -> Dict:
         },
     }
     return response
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, port=os.environ.get("PORT", 8000), host="0.0.0.0")

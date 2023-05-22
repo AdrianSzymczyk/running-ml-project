@@ -5,6 +5,12 @@ from pathlib import Path
 import mlflow
 from rich.logging import RichHandler
 
+# Assets
+DATA_URL = (
+    "https://raw.githubusercontent.com/AdrianSzymczyk/running-ml-project/main/data/activity_log.csv"
+)
+
+
 # Directories
 BASE_DIR = Path(__file__).parent.parent.absolute()
 CONFIG_DIR = Path(BASE_DIR, "config")
@@ -16,18 +22,14 @@ LOGS_DIR = Path(BASE_DIR, "logs")
 MODEL_REGISTRY = Path(STORES_DIR, "model")
 BLOB_STORE = Path(STORES_DIR, "blob")
 
-# MLFlow model registry
-mlflow.set_tracking_uri("file://" + str(MODEL_REGISTRY.absolute()))
-
 # Create dirs
 DATA_DIR.mkdir(parents=True, exist_ok=True)
+MODEL_REGISTRY.mkdir(parents=True, exist_ok=True)
 LOGS_DIR.mkdir(parents=True, exist_ok=True)
 BLOB_STORE.mkdir(parents=True, exist_ok=True)
-# Assets
-DATA_URL = (
-    "https://raw.githubusercontent.com/AdrianSzymczyk/running-ml-project/main/data/activity_log.csv"
-)
 
+# MLFlow model registry
+mlflow.set_tracking_uri("file://" + str(MODEL_REGISTRY.absolute()))
 
 logging_config = {
     "version": 1,
