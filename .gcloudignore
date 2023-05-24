@@ -1,0 +1,2 @@
+# This file was created to prevent ignoring files and dictionaries from .gitignore
+# which google cloud consider during executing "gcloud builds submit" commend

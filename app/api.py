@@ -107,7 +107,7 @@ def _arg(request: Request, arg: str) -> Dict:
 
 @app.post("/predict", tags=["Prediction"])
 @create_response
-def _predict(request: Request, run_pack: RunningPack) -> Dict:
+def predictValue(request: Request, run_pack: RunningPack) -> Dict:
     # Convert list of Run objects into json format
     runs_json = json.loads(run_pack.json())
     df = pd.json_normalize(runs_json, 'runs')
