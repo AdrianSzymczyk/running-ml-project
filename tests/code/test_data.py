@@ -77,6 +77,7 @@ def test_preprocess(df, miles, kilometers):
     assert df["Distance"][run_index] == kilometers
     assert df[['Calories', 'Avg HR']].iloc[0].dtype == np.int32
     assert df[["Avg HR"]].isin(["--"]).any(axis=1).value_counts()[0] == len(df)
+    assert len(df.columns) == 8
 
 
 def test_get_data_splits(df):

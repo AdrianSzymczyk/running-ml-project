@@ -12,7 +12,7 @@ import pandas as pd
 import json
 import uvicorn
 
-from app.schemas import RunningPack, Run
+from app.schemas import RunningPack
 from runsor import predict
 
 # Define application
@@ -48,6 +48,7 @@ def create_response(f):
         if "data" in results:
             response["data"] = results["data"]
         return response
+
     return wrapper
 
 

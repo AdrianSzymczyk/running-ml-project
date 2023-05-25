@@ -4,12 +4,13 @@ from typing import Tuple
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
+import streamlitt.data
 from config.config import logger
 
 
 def pace_to_km_converter(pace: str) -> float:
     """
-    Convert pace from minutes per Mile to seconds per kilometer
+    Convert pace from minutes per Mile to seconds per Kilometer
     :param pace: String with running pace.
     :return: Running pace represented in seconds (numeric values better for model).
     """
@@ -39,63 +40,78 @@ def time_converter(df: pd.DataFrame, time_col: str) -> pd.DataFrame:
     return df
 
 
-def preprocess(df: pd.DataFrame) -> pd.DataFrame:
+def preprocess(df: pd.DataFrame, mile_units: bool = True) -> pd.DataFrame:
     """
     Preprocess the data
     :param df: Pandas DataFrame with original data
+    :param mile_units: Bool defining units
     :return: Pandas DataFrame with preprocessed data
     """
     # Data cleaning of missing values with indices reset
-    df = df[
-        ~df[
-            [
-                "Distance",
-                "Avg HR",
-                "Max HR",
-                "Avg Pace",
-                "Avg Run Cadence",
-                "Elev Gain",
-                "Elev Loss",
+    try:
+        df = df[
+            ~df[
+                [
+                    "Distance",
+                    "Avg HR",
+                    "Max HR",
+                    "Avg Pace",
+                    "Avg Run Cadence",
+                    "Elev Gain",
+                    "Elev Loss",
+                ]
             ]
-        ]
-        .isin(["--"])
-        .any(axis=1)
-    ].reset_index(drop=True)
+            .isin(["--"])
+            .any(axis=1)
+        ].reset_index(drop=True)
+    except KeyError as err:
+        logger.error(f"{err}")
 
     # Convert data with comma
-    df["Elev Gain"] = df["Elev Gain"].apply(lambda x: int(str(x).replace(",", "")))
-    df["Elev Loss"] = df["Elev Loss"].apply(lambda x: int(str(x).replace(",", "")))
-    df["Calories"] = df["Calories"].apply(lambda x: int(str(x).replace(",", "")))
-
+    try:
+        df["Elev Gain"] = df["Elev Gain"].apply(lambda x: int(float(str(x).replace(",", ""))))
+        df["Elev Loss"] = df["Elev Loss"].apply(lambda x: int(float(str(x).replace(",", ""))))
+        df["Calories"] = df["Calories"].apply(lambda x: int(float(str(x).replace(",", ""))))
+    except KeyError as err:
+        logger.error(err)
     # Data type conversion
-    df[["Calories", "Avg HR", "Avg Run Cadence"]] = df[
-        ["Calories", "Avg HR", "Avg Run Cadence"]
-    ].astype(int)
-    df[["Elev Gain", "Elev Loss"]] = df[["Elev Gain", "Elev Loss"]].astype(float)
+    try:
+        df[["Calories", "Avg HR", "Avg Run Cadence"]] = df[
+            ["Calories", "Avg HR", "Avg Run Cadence"]
+        ].astype(int)
+        df[["Elev Gain", "Elev Loss"]] = df[["Elev Gain", "Elev Loss"]].astype(float)
+    except KeyError as err:
+        logger.error(err)
 
-    # Running time conversion
+    # Running time and pace conversion
     df = time_converter(df, "Time")
-    df["Avg Pace"] = df["Avg Pace"].apply(pace_to_km_converter)
+    if mile_units:
+        df["Avg Pace"] = df["Avg Pace"].apply(pace_to_km_converter)
 
-    # Distance calculation from mile to kilometers
-    df["Distance"] = df["Distance"].apply(lambda x: round(x * 1.60934, 2))
+        # Distance calculation from mile to kilometers
+        df["Distance"] = df["Distance"].apply(lambda x: round(x * 1.60934, 2))
+    else:
+        df["Avg Pace"] = df["Avg Pace"].apply(streamlitt.data.pace_conversion)
 
     # Drop irrelevant columns from the data
-    df = df.drop(
-        [
-            "Activity Type",
-            "Date",
-            "Title",
-            "Best Lap Time",
-            "Number of Laps",
-            "Best Pace",
-            "Max HR",
-            "Best Pace",
-            "Max Run Cadence",
-            "Avg Stride Length",
-        ],
-        axis=1,
-    )
+    try:
+        df = df.drop(
+            [
+                "Activity Type",
+                "Date",
+                "Title",
+                "Best Lap Time",
+                "Number of Laps",
+                "Best Pace",
+                "Max HR",
+                "Best Pace",
+                "Max Run Cadence",
+                "Avg Stride Length",
+            ],
+            axis=1,
+        )
+    except KeyError as err:
+        logger.error(err)
 
     logger.info("Preprocessing completed!!!")
     return df

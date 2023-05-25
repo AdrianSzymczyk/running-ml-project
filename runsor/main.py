@@ -2,7 +2,7 @@ import json
 import tempfile
 from argparse import Namespace
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Union
 import typer
 import joblib
 import mlflow
@@ -134,14 +134,23 @@ def load_artifacts(run_id: str = None) -> Dict:
     return {"args": args, "model": model, "performance": performance}
 
 
-def predict_value(data: Dict, run_id: str = None) -> List:
+def predict_value(data: Union[Dict, pd.DataFrame], run_id: str = None) -> List:
     """
     Predict calories burned during the run
-    :param data: location of the data
+    :param data: Input dictionary or pandas DataFrame to predict calories
     :param run_id: run id to load artifacts for prediction. Defaults on None
     :return:
     """
-    df = pd.DataFrame(data)
+    if isinstance(data, Dict):
+        key = list(data.keys())[0]
+        if type(data[key]) == list:
+            df = pd.DataFrame(data)
+        else:
+            df = pd.DataFrame(data, index=[0])
+    elif isinstance(data, pd.DataFrame):
+        df = data
+    else:
+        raise ValueError("Invalid input data type. Expected dictionary of pandas DataFrame")
     if not run_id:
         run_id = open(Path(config.CONFIG_DIR, "run_id.txt")).read()
     artifacts = load_artifacts(run_id)

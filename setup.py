@@ -1,5 +1,5 @@
 from pathlib import Path
-from setuptools import setup
+from setuptools import setup, find_namespace_packages
 
 # Load packages from requirements.txt
 BASE_DIR = Path(__file__).parent
@@ -16,6 +16,7 @@ setup(
     description="Regression machine learning project",
     author="Adrian Szymczyk",
     python_requires=">=3.9",
+    packages=find_namespace_packages(),
     install_requires=[required_packages],
     extras_require={
         "dev": style_packages + test_packages,
