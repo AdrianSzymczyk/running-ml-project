@@ -5,9 +5,10 @@ FROM python:3.11-slim
 ENV PYTHONUNBUFFERED True
 
 # Install dependecies
-WORKDIR /mlops-project
-COPY setup.py setup.py
-COPY requirements.txt requirements.txt
+WORKDIR /runsor-project
+
+COPY ../setup.py /runsor-project/setup.py
+COPY ../requirements.txt /runsor-project/requirements.txt
 RUN apt-get update \
     && apt-get install -y --no-install-recommends gcc build-essential \
     && rm -rf /var/lib/apt/lists/* \
@@ -18,14 +19,16 @@ RUN apt-get update \
 
 
 # Copy relevant files for running project
-COPY app app
-COPY config config
-COPY data data
-COPY runsor runsor
-COPY stores stores
+COPY ../backend /runsor-project/backend
+COPY ../config /runsor-project/config
+COPY ../data /runsor-project/data
+COPY ../runsor /runsor-project/runsor
+COPY ../stores /runsor-project/stores
+COPY ../frontend /runsor-project/frontend
 
 # Export ports
-EXPOSE 8000
+EXPOSE 8050
 
-# Start app
-CMD exec gunicorn --bind :8000 --workers 1 --threads 8 --timeout 0 -k uvicorn.workers.UvicornWorker app.api:app
+# Start backend
+ENTRYPOINT ["streamlit","run", "--server.port=8050", "frontend/app.py"]
+#CMD streamlit run --server.port 8050 frontend/app.py

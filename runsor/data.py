@@ -1,10 +1,9 @@
 from datetime import datetime
 from typing import Tuple
-
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-import streamlitt.data
+import frontend.data
 from config.config import logger
 
 
@@ -91,7 +90,7 @@ def preprocess(df: pd.DataFrame, mile_units: bool = True) -> pd.DataFrame:
         # Distance calculation from mile to kilometers
         df["Distance"] = df["Distance"].apply(lambda x: round(x * 1.60934, 2))
     else:
-        df["Avg Pace"] = df["Avg Pace"].apply(streamlitt.data.pace_conversion)
+        df["Avg Pace"] = df["Avg Pace"].apply(frontend.data.pace_conversion)
 
     # Drop irrelevant columns from the data
     try:

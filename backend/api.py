@@ -12,7 +12,7 @@ import pandas as pd
 import json
 import uvicorn
 
-from app.schemas import RunningPack
+from backend.schemas import RunningPack
 from runsor import predict
 
 # Define application

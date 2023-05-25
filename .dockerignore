@@ -1,4 +1,5 @@
-Dockerfile
+backend/Dockerfile
+frontend/Dockerfile
 README.md
 *.pyc
 *.pyo
