@@ -31,4 +31,3 @@ EXPOSE 8050
 
 # Start backend
 ENTRYPOINT ["streamlit","run", "--server.port=8050", "frontend/app.py"]
-#CMD streamlit run --server.port 8050 frontend/app.py

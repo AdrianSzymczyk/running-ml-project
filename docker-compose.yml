@@ -8,18 +8,9 @@ services:
     ports:
       - "8050:8050"
     networks:
-      extra_net:
+      extranet:
     depends_on:
       - backend
-    volumes:
-      - ./setup.py:/runsor-project/setup.py
-      - ./requirements.txt:/runsor-project/requirements.txt
-      - ./backend:/runsor-project/backend
-      - ./config:/runsor-project/config
-      - ./data:/runsor-project/data
-      - ./runsor:/runsor-project/runsor
-      - ./stores:/runsor-project/stores
-      - ./frontend:/runsor-project/frontend
     entrypoint: streamlit run --server.port=8050 frontend/app.py
 
   backend:
@@ -29,17 +20,8 @@ services:
     ports:
       - "8000:8000"
     networks:
-      extra_net:
-    volumes:
-      - ./setup.py:/runsor-project/setup.py
-      - ./requirements.txt:/runsor-project/requirements.txt
-      - ./backend:/runsor-project/backend
-      - ./config:/runsor-project/config
-      - ./data:/runsor-project/data
-      - ./runsor:/runsor-project/runsor
-      - ./stores:/runsor-project/stores
-      - ./frontend:/runsor-project/frontend
+      extranet:
     entrypoint: gunicorn --bind :8000 --workers 1 --threads 8 --timeout 0 -k uvicorn.workers.UvicornWorker backend.api:app
 networks:
-  extra_net:
+  extranet:
     external: true
