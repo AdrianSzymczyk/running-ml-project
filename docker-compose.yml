@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: ./
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "8050:8050"
+    networks:
+      extranet:
+    depends_on:
+      - backend
+    entrypoint: streamlit run --server.port=8050 frontend/app.py
+
+  backend:
+    build:
+      context: ./
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8000:8000"
+    networks:
+      extranet:
+    entrypoint: gunicorn --bind :8000 --workers 1 --threads 8 --timeout 0 -k uvicorn.workers.UvicornWorker backend.api:app
+networks:
+  extranet:
+    external: true
