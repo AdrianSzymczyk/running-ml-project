@@ -25,5 +25,5 @@ def pace_conversion(pace: str) -> int:
         pace_formatted = datetime.strptime(pace, "%M:%S").time()
         seconds = pace_formatted.minute * 60 + pace_formatted.second
         return seconds
-    except ValueError as err:
+    except ValueError:
         print("Invalid pace format")

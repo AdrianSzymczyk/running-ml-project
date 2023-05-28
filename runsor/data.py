@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Tuple
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 
 import frontend.data
@@ -39,11 +40,12 @@ def time_converter(df: pd.DataFrame, time_col: str) -> pd.DataFrame:
     return df
 
 
-def preprocess(df: pd.DataFrame, mile_units: bool = True) -> pd.DataFrame:
+def preprocess(df: pd.DataFrame, mile_units: bool = True, drop_col: bool = True) -> pd.DataFrame:
     """
     Preprocess the data
     :param df: Pandas DataFrame with original data
-    :param mile_units: Bool defining units
+    :param mile_units: whether to convert pace from miles
+    :param drop_col: whether to drop irrelevant columns for model
     :return: Pandas DataFrame with preprocessed data
     """
     # Data cleaning of missing values with indices reset
@@ -92,7 +94,21 @@ def preprocess(df: pd.DataFrame, mile_units: bool = True) -> pd.DataFrame:
     else:
         df["Avg Pace"] = df["Avg Pace"].apply(frontend.data.pace_conversion)
 
-    # Drop irrelevant columns from the data
+    if drop_col:
+        # Drop irrelevant columns from the data
+        df = drop_columns(df)
+
+    logger.info("Preprocessing completed!!!")
+    return df
+
+
+def drop_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Drop irrelevant columns for training model
+    :param df: Pandas DataFrame with data
+    :return: DataFrame with removed columns
+    """
+
     try:
         df = df.drop(
             [
@@ -112,7 +128,6 @@ def preprocess(df: pd.DataFrame, mile_units: bool = True) -> pd.DataFrame:
     except KeyError as err:
         logger.error(err)
 
-    logger.info("Preprocessing completed!!!")
     return df
 
 
@@ -141,3 +156,21 @@ def get_data_splits(
     else:
         X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_size)
         return X_train.values, X_test.values, y_train.values, y_test.values
+
+
+def plots_transform(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Transforming data to create charts
+    :param data: Pandas DataFrame with data
+    :return: Transformed dataFrame with new
+    """
+
+    df = preprocess(data, True, False)
+    df = df.sort_values(by=['Avg Pace'])
+    bins = np.arange(150, 421, 15)
+    df['Pace Range'] = pd.cut(x=df['Avg Pace'], bins=bins, retbins=False)
+    df['Pace Range'] = df['Pace Range'].apply(
+        lambda x: datetime.fromtimestamp(x.left).strftime("%M:%S") + "-" + datetime.fromtimestamp(x.right).strftime(
+            "%M:%S"))
+
+    return df

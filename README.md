@@ -2,7 +2,7 @@
 
 > This project utilizes the recorded running training data to predict the calories burned during a run.
 > Using supervised machine learning algorithm the model estimates calories based on the input features.
-> Live demo [_RunSor_](https://frontend-qnzpwdwgvq-lm.a.run.app/).
+> Live demo [_RunSor_](https://runsor-qnzpwdwgvq-lm.a.run.app/).
 <hr>
 
 ## Table of Contents
