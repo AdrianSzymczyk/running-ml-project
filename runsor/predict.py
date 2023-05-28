@@ -13,6 +13,8 @@ def predict(data: pd.DataFrame, artifacts: Dict) -> List:
     Returns:
         List: predictions for input data.
     """
+    if "Calories" in data.columns:
+        data = data.drop("Calories", axis=1)
     calories = artifacts["model"].predict(data.values)
     predictions = [
         {

@@ -80,7 +80,7 @@ def app():
                     calories = prediction[0]['predicted_calories']
                     st.subheader(f':fire: You burned :red[{calories}] calories')
                 # Raise error when values are not correct
-                except ValueError as err:
+                except ValueError:
                     st.write('**Cannot calculate calories, because of the invalid values**')
 
     else:
@@ -93,17 +93,20 @@ def app():
                 dataframe = pd.read_csv(uploaded_file)
             else:
                 dataframe = pd.read_json(uploaded_file)
-            if len(dataframe.columns) != 7:
-                dataframe = runsor.data.preprocess(dataframe)
-            predictions = main.predict_value(dataframe, run_id)
-            # Append calculated calories to an empty list
-            calories: List = []
-            for run in predictions:
-                calories.append(run["predicted_calories"])
-            dataframe["Calories"] = calories
-            dataframe = dataframe.style.apply(highlight_col, axis=0)
-            st.subheader(":fire:*Calculated calories* ")
-            st.write(dataframe)
+            try:
+                if len(dataframe.columns) != 7:
+                    dataframe = runsor.data.preprocess(dataframe)
+                predictions = main.predict_value(dataframe, run_id)
+                # Append calculated calories to an empty list
+                calories: List = []
+                for run in predictions:
+                    calories.append(run["predicted_calories"])
+                dataframe["Calories"] = calories
+                dataframe = dataframe.style.apply(highlight_col, axis=0)
+                st.subheader(":fire:*Calculated calories* ")
+                st.write(dataframe)
+            except KeyError:
+                st.write(':red[**Wrong data was passed**]')
 
 
 if __name__ == "__main__":
