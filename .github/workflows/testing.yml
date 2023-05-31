@@ -1,0 +1,29 @@
+name: testing
+on:
+  push:
+    branches:
+      - main
+      - gcloud
+  pull-request:
+    branches:
+      - main
+      - gcloud
+jobs:
+  test-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Caching
+        uses: actions/cache@v2
+        with:
+          path: $/{/{ env.pythonLocation /}/}
+          key: $/{/{ env.pythonLocation /}/}-$/{/{ hashFiles('setup.py') /}/}-$/{/{ hashFiles('requirements.txt') /}/}
+      - name: Install dependencies
+        run: python3 -m pip install -e ".[test]" --no-cache-dir
+      - name: Execute tests
+        run: pytest tests/runsor --ignore tests/code/test_main.py --ignore tests/code/test_data.py

@@ -16,7 +16,7 @@ setup(
     version=0.1,
     description="Regression machine learning project",
     author="Adrian Szymczyk",
-    python_requires=">=3.9",
+    python_requires=">=3.11",
     packages=find_namespace_packages(),
     install_requires=[required_packages],
     extras_require={
