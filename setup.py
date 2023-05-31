@@ -1,9 +1,10 @@
 from pathlib import Path
-from setuptools import setup, find_namespace_packages
+
+from setuptools import find_namespace_packages, setup
 
 # Load packages from requirements.txt
 BASE_DIR = Path(__file__).parent
-with open(Path(BASE_DIR, "requirements.txt"), "r") as file:
+with open(Path(BASE_DIR, "requirements.txt")) as file:
     required_packages = [ln.strip() for ln in file.readlines()]
 
 style_packages = ["black==23.3.0", "flake8==6.0.0", "isort==5.12.0"]
@@ -19,7 +20,7 @@ setup(
     packages=find_namespace_packages(),
     install_requires=[required_packages],
     extras_require={
-        "dev": style_packages + test_packages,
+        "dev": style_packages + test_packages + ["pre-commit==3.3.2"],
         "test": test_packages,
     },
 )

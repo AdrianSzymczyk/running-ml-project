@@ -11,7 +11,7 @@ def time_conversion(time: str) -> int:
         time_formatted = datetime.strptime(time, "%H:%M:%S").time()
         seconds = (time_formatted.hour * 60 + time_formatted.minute) * 60 + time_formatted.second
         return seconds
-    except ValueError as err:
+    except ValueError:
         print("Invalid time format")
 
 

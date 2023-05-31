@@ -26,7 +26,7 @@ validations:
       data_asset_name: activity_log.csv
       data_connector_query:
         index: -1
-    expectation_suite_name: runTrainings
+    expectation_suite_name: activityLog
 profilers: []
 ge_cloud_id:
 expectation_suite_ge_cloud_id:

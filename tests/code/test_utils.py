@@ -1,17 +1,15 @@
-import pytest
 import tempfile
-import numpy as np
-from runsor import utils
 from pathlib import Path
+
+import numpy as np
+import pytest
+
+from runsor import utils
 
 
 @pytest.fixture()
 def data():
-    data = {
-        "key1": "value1",
-        "key2": "value2",
-        "key3": "value3"
-    }
+    data = {"key1": "value1", "key2": "value2", "key3": "value3"}
     return data
 
 

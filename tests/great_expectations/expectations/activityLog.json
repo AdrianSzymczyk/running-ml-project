@@ -1,6 +1,6 @@
 {
   "data_asset_type": null,
-  "expectation_suite_name": "runTrainings",
+  "expectation_suite_name": "activityLog",
   "expectations": [
     {
       "expectation_type": "expect_table_columns_to_match_ordered_list",
@@ -28,9 +28,30 @@
       "meta": {}
     },
     {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "Activity Type"
+      },
+      "meta": {}
+    },
+    {
       "expectation_type": "expect_column_values_to_be_unique",
       "kwargs": {
         "column": "Date"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "Date"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "Title"
       },
       "meta": {}
     },
@@ -73,6 +94,13 @@
     {
       "expectation_type": "expect_column_values_to_not_be_null",
       "kwargs": {
+        "column": "Max HR"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
         "column": "Avg Run Cadence"
       },
       "meta": {}
@@ -80,7 +108,21 @@
     {
       "expectation_type": "expect_column_values_to_not_be_null",
       "kwargs": {
+        "column": "Max Run Cadence"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
         "column": "Avg Pace"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "Best Pace"
       },
       "meta": {}
     },
@@ -99,18 +141,23 @@
       "meta": {}
     },
     {
-      "expectation_type": "expect_column_values_to_match_strftime_format",
+      "expectation_type": "expect_column_values_to_not_be_null",
       "kwargs": {
-        "column": "Avg Pace",
-        "strftime_format": "%M:%S"
+        "column": "Avg Stride Length"
       },
       "meta": {}
     },
     {
-      "expectation_type": "expect_column_values_to_match_strftime_format",
+      "expectation_type": "expect_column_values_to_not_be_null",
       "kwargs": {
-        "column": "Time",
-        "strftime_format": "%H:%M:%S"
+        "column": "Best Lap Time"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "Number of Laps"
       },
       "meta": {}
     }
@@ -125,7 +172,7 @@
           "datasource_name": "local_data",
           "limit": 1000
         },
-        "citation_date": "2023-05-19T15:22:06.552080Z",
+        "citation_date": "2023-05-31T10:10:07.436060Z",
         "comment": "Created suite added via CLI"
       }
     ],

@@ -3,18 +3,14 @@ import tempfile
 from argparse import Namespace
 from pathlib import Path
 from typing import Dict, List, Union
-import typer
+
 import joblib
 import mlflow
 import optuna
 import pandas as pd
+import typer
 from numpyencoder import NumpyEncoder
 from optuna.integration.mlflow import MLflowCallback
-import sys
-import os
-
-# Add the parent directory to the module search path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import config
 from config.config import logger
@@ -39,12 +35,16 @@ def el_data() -> None:
 
 @app.command()
 def train_model(
-        args_fp: str = 'config/args.json', experiment_name: str = "baselines", run_name: str = "rnd_reg"
+    args_fp: str = "config/args.json",
+    experiment_name: str = "baselines",
+    run_name: str = "rnd_reg",
+    test_run: bool = False,
 ) -> None:
     """
     Train a model with given hyperparameters
     :param args_fp: filepath to the file with parameters
     :param experiment_name: name of an experiment
+    :param test_run: If True, artifacts will not be saved. Defaults to False
     :param run_name: name of specifies run in experiment
     """
     # Load data
@@ -63,8 +63,6 @@ def train_model(
         mlflow.log_metrics({"MSE": performance["MSE"]})
         mlflow.log_metrics({"RMSE": performance["RMSE"]})
         mlflow.log_metrics({"MAE": performance["MAE"]})
-        mlflow.log_metrics({"Cross_val_mean": performance["Cross_val_mean"]})
-        mlflow.log_metrics({"Cross_val_std": performance["Cross_val_std"]})
         mlflow.log_params(vars(artifacts["args"]))
 
         # Log artifacts
@@ -74,14 +72,15 @@ def train_model(
             utils.save_dict(performance, Path(dp, "performance.json"))
             mlflow.log_artifacts(dp)
 
-        # Save to config
-        open(Path(config.CONFIG_DIR, "run_id.txt"), "w").write(run_id)
-        utils.save_dict(performance, Path(config.CONFIG_DIR, "performance.json"))
+        if not test_run:
+            # Save to config
+            open(Path(config.CONFIG_DIR, "run_id.txt"), "w").write(run_id)
+            utils.save_dict(performance, Path(config.CONFIG_DIR, "performance.json"))
 
 
 @app.command()
 def optimize(
-        args_fp: str = "config/args.json", study_name: str = "optimization", num_trials: int = 20
+    args_fp: str = "config/args.json", study_name: str = "optimization", num_trials: int = 20
 ) -> None:
     """
     Optimize hyperparameters.
@@ -159,7 +158,7 @@ def predict_value(data: Union[Dict, pd.DataFrame], run_id: str = None) -> List:
 
 
 if __name__ == "__main__":
-    args_path = Path(config.CONFIG_DIR, 'args.json')
+    args_path = Path(config.CONFIG_DIR, "args.json")
     # Load data
     # elt_data()
 

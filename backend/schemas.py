@@ -1,6 +1,6 @@
-from fastapi import Query
-from pydantic import BaseModel, validator
 from typing import List
+
+from pydantic import BaseModel, validator
 
 
 class Run(BaseModel):
@@ -33,7 +33,7 @@ class RunningPack(BaseModel):
                         "run_cadence": 174,
                         "pace": 510.0,
                         "elev_gain": 120,
-                        "elev_loss": 110
+                        "elev_loss": 110,
                     },
                     {
                         "distance": 7.85,
@@ -42,8 +42,8 @@ class RunningPack(BaseModel):
                         "run_cadence": 174,
                         "pace": 305,
                         "elev_gain": 132,
-                        "elev_loss": 129
-                    }
+                        "elev_loss": 129,
+                    },
                 ]
             }
         }

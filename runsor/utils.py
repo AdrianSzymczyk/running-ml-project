@@ -11,7 +11,7 @@ def load_dict(filepath: str) -> Dict:
     :param filepath: location of file
     :return: dictionary with loaded data from JSON file
     """
-    with open(filepath, "r") as file:
+    with open(filepath) as file:
         d = json.load(file)
     return d
 

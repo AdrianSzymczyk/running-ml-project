@@ -1,25 +1,25 @@
+import json
 import os
-from fastapi import FastAPI, Request
-from http import HTTPStatus
-from typing import Dict
 from datetime import datetime
 from functools import wraps
+from http import HTTPStatus
 from pathlib import Path
-from config import config
-from config.config import logger
-from runsor import main
+from typing import Dict
+
 import pandas as pd
-import json
 import uvicorn
+from fastapi import FastAPI, Request
 
 from backend.schemas import RunningPack
-from runsor import predict
+from config import config
+from config.config import logger
+from runsor import main, predict
 
 # Define application
 app = FastAPI(
-    title='RunSor - fully ML project',
-    description='Regressor machine learning project.',
-    version=0.1
+    title="RunSor - fully ML project",
+    description="Regressor machine learning project.",
+    version=0.1,
 )
 
 
@@ -43,7 +43,7 @@ def create_response(f):
             "method": request.method,
             "status-code": results["status-code"],
             "timestamp": datetime.now().isoformat(),
-            "url": request.url._url
+            "url": request.url._url,
         }
         if "data" in results:
             response["data"] = results["data"]
@@ -52,7 +52,7 @@ def create_response(f):
     return wrapper
 
 
-@app.get("/", tags=['General'])
+@app.get("/", tags=["General"])
 @create_response
 def _index(request: Request) -> Dict:
     """Health check."""
@@ -85,9 +85,7 @@ def _args(request: Request) -> Dict:
     response = {
         "message": HTTPStatus.OK.phrase,
         "status-code": HTTPStatus.OK,
-        "data": {
-            "args": vars(artifacts["args"])
-        },
+        "data": {"args": vars(artifacts["args"])},
     }
     return response
 
@@ -111,14 +109,12 @@ def _arg(request: Request, arg: str) -> Dict:
 def predictValue(request: Request, run_pack: RunningPack) -> Dict:
     # Convert list of Run objects into json format
     runs_json = json.loads(run_pack.json())
-    df = pd.json_normalize(runs_json, 'runs')
+    df = pd.json_normalize(runs_json, "runs")
     predictions = predict.predict(df, artifacts=artifacts)
     response = {
         "message": HTTPStatus.OK.phrase,
         "status-code": HTTPStatus.OK,
-        "data": {
-            "predictions": predictions
-        },
+        "data": {"predictions": predictions},
     }
     return response
 

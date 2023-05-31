@@ -60,9 +60,7 @@ def train(df: pd.DataFrame, args: Namespace, trial: optuna.trial._trial.Trial = 
 
     # Evaluation
     y_pred = model.predict(X_test)
-    performance = evaluate.get_metrics(
-        y_true=y_test, y_pred=y_pred, model=model, X_train=X_train, y_train=y_train
-    )
+    performance = evaluate.get_metrics(y_true=y_test, y_pred=y_pred)
 
     return {"args": args, "model": model, "performance": performance}
 

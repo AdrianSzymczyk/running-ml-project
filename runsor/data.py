@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Tuple
-import pandas as pd
+
 import numpy as np
+import pandas as pd
 from sklearn.model_selection import train_test_split
 
 import frontend.data
@@ -166,11 +167,13 @@ def plots_transform(data: pd.DataFrame) -> pd.DataFrame:
     """
 
     df = preprocess(data, True, False)
-    df = df.sort_values(by=['Avg Pace'])
+    df = df.sort_values(by=["Avg Pace"])
     bins = np.arange(150, 421, 15)
-    df['Pace Range'] = pd.cut(x=df['Avg Pace'], bins=bins, retbins=False)
-    df['Pace Range'] = df['Pace Range'].apply(
-        lambda x: datetime.fromtimestamp(x.left).strftime("%M:%S") + "-" + datetime.fromtimestamp(x.right).strftime(
-            "%M:%S"))
+    df["Pace Range"] = pd.cut(x=df["Avg Pace"], bins=bins, retbins=False)
+    df["Pace Range"] = df["Pace Range"].apply(
+        lambda x: datetime.fromtimestamp(x.left).strftime("%M:%S")
+        + "-"
+        + datetime.fromtimestamp(x.right).strftime("%M:%S")
+    )
 
     return df

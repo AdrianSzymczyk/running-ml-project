@@ -7,7 +7,7 @@ from rich.logging import RichHandler
 
 # Assets
 DATA_URL = (
-    "https://raw.githubusercontent.com/AdrianSzymczyk/running-ml-project/main/data/activity_log.csv"
+    "https://raw.githubusercontent.com/AdrianSzymczyk/AdrianSzymczyk/main/datasets/activity_log.csv"
 )
 
 

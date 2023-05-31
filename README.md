@@ -18,11 +18,11 @@
 <!-- * [License](#license) -->
 
 ## General Information
-This project was designed and created to predict calories burned in running trainings. 
+This project was designed and created to predict calories burned in running trainings.
 The running training data came from the [kaggle datasets](https://www.kaggle.com/datasets/jeffreybraun/running-log-insight) and was collected via my Garmin GPS watch.
-In this project I intend to leverage this data to build and predictive model using **Random Forest Regressor** algorithm 
+In this project I intend to leverage this data to build and predictive model using **Random Forest Regressor** algorithm
 to estimate the number of calories burned during a run. <br />
-This project was created to review my knowledge about the supervised machine learning techniques with software 
+This project was created to review my knowledge about the supervised machine learning techniques with software
 engineering to develop, deploy and maintain production ML application.
 
 ## Technologies Used
@@ -36,9 +36,9 @@ engineering to develop, deploy and maintain production ML application.
 
 ## Features
 - Predict calories burned during a single run
-- Predict calories burned during a series of runs 
+- Predict calories burned during a series of runs
 
-## Screenshots 
+## Screenshots
 ![Run_predict](./img/app_screenshot2.png) <hr>
 ![Multiple_runs_predict](./img/app_screenshot3.png)
 
@@ -56,12 +56,6 @@ python -m pip install -e .
 ```bash
 uvicorn backend.api:app --host 0.0.0.0 --port 8000 --reload # dev
 gunicorn --bind :8000 --workers 1 --threads 8 --timeout 0 -k uvicorn.workers.UvicornWorker backend.api:app  # prod
-```
-
-### GOOGLE CLOUD DEPLOYMENT
-```bash
-gcloud builds submit --tag gcr.io/running-ml-project/backend
-gcloud run deploy --image gcr.io/running-ml-project/backend --platform managed --port 8000
 ```
 
 ### Streamlit

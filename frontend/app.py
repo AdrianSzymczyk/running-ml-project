@@ -1,12 +1,14 @@
+from pathlib import Path
 from typing import List
-import streamlit as st
+
+import matplotlib.pyplot as plt
 import pandas as pd
+import streamlit as st
+
 import runsor.data
 from config import config
-from pathlib import Path
-from runsor import utils, main, data
 from frontend import data as frontdata
-import matplotlib.pyplot as plt
+from runsor import data, main, utils
 
 
 def highlight_col(col) -> List:
@@ -19,7 +21,7 @@ def highlight_col(col) -> List:
         color = "#630707"
     else:
         color = "#0e1117"
-    return ['background-color: {}'.format(color) for _ in col]
+    return ["background-color: {}".format(color) for _ in col]
 
 
 # Setup HTML configuration
@@ -52,25 +54,25 @@ def app():
 
         # Display of distribution of Average Pace chart
         plt.figure(figsize=(10, 6))
-        plt.hist(df['Pace Range'], edgecolor='black', bins=15)
-        plt.xlabel('Average Pace Range')
+        plt.hist(df["Pace Range"], edgecolor="black", bins=15)
+        plt.xlabel("Average Pace Range")
         plt.xticks(rotation=60)
-        plt.ylabel('Frequency')
+        plt.ylabel("Frequency")
         tab1.subheader("A tab with distribution of Average Pace")
         tab1.pyplot(plt)
 
         # Display of distribution of Distance chart
         plt.figure(figsize=(10, 6))
-        plt.hist(df['Distance'], edgecolor='black', color='orange', bins=15)
-        plt.xlabel('Average Distance Range')
-        plt.ylabel('Frequency')
+        plt.hist(df["Distance"], edgecolor="black", color="orange", bins=15)
+        plt.xlabel("Average Distance Range")
+        plt.ylabel("Frequency")
         tab2.subheader("A tab with distribution of Distance")
         tab2.pyplot(plt)
 
         plt.figure(figsize=(10, 7))
-        plt.scatter(df['Calories'], df['Distance'], c='blue', alpha=0.5)
-        plt.xlabel('Calories')
-        plt.ylabel('Distance')
+        plt.scatter(df["Calories"], df["Distance"], c="blue", alpha=0.5)
+        plt.xlabel("Calories")
+        plt.ylabel("Distance")
         plt.tight_layout()
         tab3.subheader("Relationship between Calories and Distance")
         tab3.pyplot(plt)
@@ -92,8 +94,7 @@ def app():
         st.divider()
         st.header(":chart_with_upwards_trend: Inference")
         upload_method = st.radio(
-            "How do you want to transfer data",
-            ("Single Run", "Many trainings")
+            "How do you want to transfer data", ("Single Run", "Many trainings")
         )
 
         # Define run_id for prediction
@@ -108,29 +109,49 @@ def app():
                 heart_rate = st.number_input("Insert your average Hear Rate", value=145)
                 elev_gain = st.number_input("Insert elevation gain [meters]", value=25)
             with col2:
-                time = st.text_input("Insert time **accepted format - (%H:red[:]%M:red[:]%S)**", placeholder="00:15:26")
+                time = st.text_input(
+                    "Insert time **accepted format - (%H:red[:]%M:red[:]%S)**",
+                    placeholder="00:15:26",
+                )
                 run_cadence = st.number_input("Insert run cadence", value=176)
                 elev_loss = st.number_input("Insert elevation loss [meters]", value=15)
-            pace = st.text_input("Insert pace [km/min] **accepted format - (%M:red[:]%S)**", placeholder="05:26")
+            pace = st.text_input(
+                "Insert pace [km/min] **accepted format - (%M:red[:]%S)**", placeholder="05:26"
+            )
             # Display button after all data has been entered
-            if distance and time and heart_rate and run_cadence and elev_gain and elev_loss and pace:
+            if (
+                distance
+                and time
+                and heart_rate
+                and run_cadence
+                and elev_gain
+                and elev_loss
+                and pace
+            ):
                 submit = st.button("Calculate calories!")
                 if submit:
                     try:
-                        run = {"Distance": distance, "Time": frontdata.time_conversion(time),
-                               "Avg Run Cadence": run_cadence, "Avg HR": heart_rate,
-                               "Avg Pace": frontdata.pace_conversion(pace), "Elev Gain": elev_gain, "Elev Loss": elev_loss}
+                        run = {
+                            "Distance": distance,
+                            "Time": frontdata.time_conversion(time),
+                            "Avg Run Cadence": run_cadence,
+                            "Avg HR": heart_rate,
+                            "Avg Pace": frontdata.pace_conversion(pace),
+                            "Elev Gain": elev_gain,
+                            "Elev Loss": elev_loss,
+                        }
                         # Predict value for given data and display them
                         prediction = main.predict_value(run, run_id)
-                        calories = prediction[0]['predicted_calories']
-                        st.subheader(f':fire: You burned :red[{calories}] calories')
+                        calories = prediction[0]["predicted_calories"]
+                        st.subheader(f":fire: You burned :red[{calories}] calories")
                     # Raise error when values are not correct
                     except ValueError:
-                        st.write('**Cannot calculate calories, because of the invalid values**')
+                        st.write("**Cannot calculate calories, because of the invalid values**")
 
         else:
-            uploaded_file = st.file_uploader("Choose a file with your running data :red[**(.json, .csv)**]",
-                                             type=["csv", "json"])
+            uploaded_file = st.file_uploader(
+                "Choose a file with your running data :red[**(.json, .csv)**]", type=["csv", "json"]
+            )
             if uploaded_file is not None:
                 # Get the file extension
                 file_extension = uploaded_file.name.split(".")[-1]
@@ -151,7 +172,7 @@ def app():
                     st.subheader(":fire:*Calculated calories* ")
                     st.write(dataframe)
                 except KeyError:
-                    st.write(':red[**Wrong data was passed**]')
+                    st.write(":red[**Wrong data was passed**]")
     # ************************* End Inference section ***************************
 
 
